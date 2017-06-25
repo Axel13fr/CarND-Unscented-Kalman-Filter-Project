@@ -43,7 +43,7 @@ public:
   static Eigen::VectorXd CalculatePosFromRadar(const Eigen::VectorXd &radar_mes);
   static Eigen::VectorXd TransformToRadarFromState(const Eigen::VectorXd &state);
 
-  static void NormalizeAngle(double &angle);
+  static double NormalizeAngle(const double &angle);
 };
 
 #endif /* TOOLS_H_ */

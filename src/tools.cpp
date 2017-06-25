@@ -63,9 +63,13 @@ Eigen::VectorXd Tools::TransformToRadarFromState(const Eigen::VectorXd &state)
     return rad_mes;
 }
 
-void Tools::NormalizeAngle(double& angle){
 
-    while (angle> M_PI) angle-=2.*M_PI;
-    while (angle<-M_PI) angle+=2.*M_PI;
+double Tools::NormalizeAngle(const double& angle){
+    auto ret_angle = angle;
+
+    while (ret_angle> M_PI) ret_angle-=2.*M_PI;
+    while (ret_angle<-M_PI) ret_angle+=2.*M_PI;
+
+    return ret_angle;
 
 }

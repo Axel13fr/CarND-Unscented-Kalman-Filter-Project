@@ -105,6 +105,7 @@ public:
    * @param meas_package The measurement at k+1
    */
     void UpdateRadar(MeasurementPackage meas_package);
+
 private:
 
     /**
@@ -124,10 +125,23 @@ private:
      * @return augmented sigma point matrix
      */
     MatrixXd AugmentedSigmaPoints();
+
+     // Predict sigma points for prediction step (from augmented sig pts to predicted sig pts)
     MatrixXd SigmaPointPrediction(const MatrixXd &Xsig_aug, const double delta_t);
+
+    // Predict state & cov matrix for prediction step
     void PredictMeanAndCovariance(VectorXd &x_out, MatrixXd &P_out);
+
+    // Predict sigma points from state space to measurement space for update
     void PredictRadarMeasurement(MatrixXd &ZSig_out, VectorXd &z_out, MatrixXd &S_out);
     void UpdateStateRadar(const Eigen::MatrixXd &Zsig, const VectorXd &z_pred, const MatrixXd &S_pred,const VectorXd &z_meas);
+
+    /**
+     * @brief IsMeasurementUsed
+     * @param meas_package
+     * @return true if the measurement type shall be processed
+     */
+    bool IsMeasurementUsed(MeasurementPackage meas_package);
 };
 
 #endif /* UKF_H */

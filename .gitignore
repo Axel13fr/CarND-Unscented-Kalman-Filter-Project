@@ -3,3 +3,15 @@
 
 # build files
 build/
+
+*.cmake
+
+src/CMakeFiles/
+
+src/Makefile
+
+src/UnscentedKF
+
+CMakeLists\.txt\.user
+
+src/CMakeCache\.txt

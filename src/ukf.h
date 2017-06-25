@@ -68,7 +68,7 @@ public:
     static constexpr int n_aug_ = 7;
 
     ///* Sigma point spreading parameter
-    static constexpr double lambda_ = 3.0 - n_x_;
+    static constexpr int lambda_ = 3 - n_x_;
 
 
     /**
@@ -106,11 +106,6 @@ public:
    */
     void UpdateRadar(MeasurementPackage meas_package);
 private:
-    /**
-     * @brief GenerateSigmaPoints
-     * @param Xsig_out sigma point matrix
-     */
-    void GenerateSigmaPoints(MatrixXd *Xsig_out);
 
     /**
      * @brief GetDeltaT
@@ -118,6 +113,21 @@ private:
      * @return updated delta time between measurement and last update
      */
     double GetDeltaT(MeasurementPackage meas_package);
+
+    /**
+     * @brief GenerateSigmaPoints
+     * @return sigma point matrix
+     */
+    MatrixXd GenerateSigmaPoints();
+    /**
+     * @brief AugmentedSigmaPoints
+     * @return augmented sigma point matrix
+     */
+    MatrixXd AugmentedSigmaPoints();
+    MatrixXd SigmaPointPrediction(const MatrixXd &Xsig_aug, const double delta_t);
+    void PredictMeanAndCovariance(VectorXd &x_out, MatrixXd &P_out);
+    void PredictRadarMeasurement(MatrixXd &ZSig_out, VectorXd &z_out, MatrixXd &S_out);
+    void UpdateStateRadar(const Eigen::MatrixXd &Zsig, const VectorXd &z_pred, const MatrixXd &S_pred,const VectorXd &z_meas);
 };
 
 #endif /* UKF_H */

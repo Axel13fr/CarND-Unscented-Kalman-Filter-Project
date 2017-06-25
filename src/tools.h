@@ -19,11 +19,31 @@ public:
   */
   virtual ~Tools();
 
+  enum state_E{
+      X = 0,
+      Y,
+      Vx,
+      Vy,
+
+      STATE_SIZE
+  };
+  enum rad_mes_E{
+    RO = 0,
+    THETA,
+    RO_DOT,
+
+    RAD_MES_SIZE
+  };
+
   /**
   * A helper method to calculate RMSE.
   */
-  VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
+  static VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
 
+  static Eigen::VectorXd CalculatePosFromRadar(const Eigen::VectorXd &radar_mes);
+  static Eigen::VectorXd TransformToRadarFromState(const Eigen::VectorXd &state);
+
+  static void NormalizeAngle(double &angle);
 };
 
 #endif /* TOOLS_H_ */

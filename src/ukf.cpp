@@ -111,7 +111,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       */
             x_ <<  meas_package.raw_measurements_(0),
                     meas_package.raw_measurements_(1),
-                    0.1,0.1;
+                    0.2,0.1,0.0;
         }
 
         previous_timestamp_ = meas_package.timestamp_us_;
@@ -146,13 +146,19 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
         UpdateRadar(meas_package);
         previous_timestamp_ = meas_package.timestamp_us_;
 
-    } else if(use_laser_){
+    } else if(meas_package.sensor_type_ == MeasurementPackage::LASER and use_laser_){
         // Laser updates
         UpdateLidar(meas_package);
         previous_timestamp_ = meas_package.timestamp_us_;
     } else{
         // wrong measurement !
-        cout << "Error: unknown measurement type !";
+        if(meas_package.sensor_type_ != MeasurementPackage::RADAR
+                and
+           meas_package.sensor_type_ != MeasurementPackage::LASER){
+
+            cout << "No measurement type !";
+        }
+
     }
 
     // print the output

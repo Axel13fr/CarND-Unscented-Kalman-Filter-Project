@@ -38,9 +38,9 @@ Eigen::VectorXd Tools::CalculatePosFromRadar(const Eigen::VectorXd &radar_mes)
     auto ro = radar_mes(RO);
     auto theta = radar_mes(THETA);
     auto state = VectorXd(STATE_SIZE);
-    // x,y, Vx, Vy
+    // x,y, V, Yaw, YawRate
     state << ro*std::cos(theta) , ro*std::sin(theta) ,
-            0 , 0;
+            0.2 , 0.1, 0;
 
     return state;
 }

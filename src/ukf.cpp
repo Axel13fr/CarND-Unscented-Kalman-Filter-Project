@@ -92,11 +92,11 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
           * Remember: you'll need to convert radar from polar to cartesian coordinates.
         */
         // Initial cov set to 3m for position and 2m/s for speed
-        P_ << 3,0,0,0,0,
-                0,3,0,0,0,
-                0,0,2,0,0,
-                0,0,0,2.5,0, // orientation grad^2
-                0,0,0,0,1;   // yaw rate
+        P_ << 1,0,0,0,0,
+                0,1,0,0,0,
+                0,0,1,0,0,
+                0,0,0,0.5,0, // orientation grad^2
+                0,0,0,0,0.5;   // yaw rate
         cout << P_ << endl;
 
         if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
@@ -131,7 +131,16 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
     if(IsMeasurementUsed(meas_package)){
-        Prediction(GetDeltaT(meas_package));
+        // In case delta T is too large, decompose prediction to avoid 
+        // numerical instabilities
+        auto delta_t = GetDeltaT(meas_package);
+        constexpr double dt = 0.05;
+        while (delta_t > 0.1)
+        {
+            Prediction(dt);
+            delta_t -= dt;
+        }
+        Prediction(delta_t);
     }else{
         // measurement type ignored
     }
@@ -299,7 +308,6 @@ void UKF::PredictMeanAndCovariance(VectorXd& x_out, MatrixXd& P_out) {
 
 MatrixXd UKF::SigmaPointPrediction(const MatrixXd& Xsig_aug, const double delta_t) {
 
-
     //create matrix with predicted sigma points as columns
     MatrixXd Xsig_pred = MatrixXd(n_x_, 2 * n_aug_ + 1);
 
@@ -397,9 +405,16 @@ void UKF::PredictRadarMeasurement(MatrixXd& ZSig_out,VectorXd& z_out, MatrixXd& 
         double v2 = sin(yaw)*v;
 
         // measurement model
-        Zsig(Tools::RO,i) = sqrt(p_x*p_x + p_y*p_y);                           //r
-        Zsig(Tools::THETA,i) = atan2(p_y,p_x);                                 //phi
-        Zsig(Tools::RO_DOT,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);  //r_dot
+        if (p_x == 0 && p_y == 0) {
+          Zsig(0,i) = 0;
+          Zsig(1,i) = 0;
+          Zsig(2,i) = 0;
+        } else {
+          Zsig(Tools::RO,i) = sqrt(p_x*p_x + p_y*p_y);                           //r
+          Zsig(Tools::THETA,i) = atan2(p_y,p_x);                                 //phi
+          Zsig(Tools::RO_DOT,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);  //r_dot
+        }
+
     }
 
     //mean predicted measurement

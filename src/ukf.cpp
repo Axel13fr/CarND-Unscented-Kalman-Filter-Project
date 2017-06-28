@@ -517,10 +517,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     PredictRadarMeasurement(Zsig,z_pred,S_pred);
 
     // Update
-    VectorXd Z_meas = VectorXd(3);
-    Z_meas <<  meas_package.raw_measurements_(Tools::RO),
-            meas_package.raw_measurements_(Tools::THETA),
-            meas_package.raw_measurements_(Tools::RO_DOT);
+    VectorXd Z_meas = meas_package.raw_measurements_;
     UpdateStateRadar(Zsig,z_pred,S_pred,Z_meas);
 
     // Compute Radar NIS

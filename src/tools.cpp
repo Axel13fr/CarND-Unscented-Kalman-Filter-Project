@@ -47,12 +47,12 @@ Eigen::VectorXd Tools::CalculatePosFromRadar(const Eigen::VectorXd &radar_mes)
 
 Eigen::VectorXd Tools::TransformToRadarFromState(const Eigen::VectorXd &state)
 {
-    // state = x,y, Vx, Vy
+    // state = x,y, V, Yaw, YawRate
     auto ro = sqrt(state(X)*state(X) + state(Y)*state(Y));
     auto theta = atan2(state(Y),state(X));
     assert(theta <= M_PI and theta >= -M_PI);
 
-    auto c1 = state(X)*state(Vx) + state(Y)*state(Vy);
+    auto c1 = state(X)*state(V)*cos(state(YAW)) + state(Y)*state(V)*sin(state(YAW));
     assert(fabs(c1) > 0.0001);
     assert(fabs(ro) > 0.0001);
     auto ro_dot = c1 / ro;
@@ -65,11 +65,16 @@ Eigen::VectorXd Tools::TransformToRadarFromState(const Eigen::VectorXd &state)
 
 
 double Tools::NormalizeAngle(const double& angle){
-    auto ret_angle = angle;
 
-    while (ret_angle> M_PI) ret_angle-=2.*M_PI;
-    while (ret_angle<-M_PI) ret_angle+=2.*M_PI;
+    auto norm_delta_phi = fmod(angle,2*M_PI);
+        if(norm_delta_phi > M_PI){
+            norm_delta_phi -= 2*M_PI;
+        }else if(norm_delta_phi < -M_PI){
+            norm_delta_phi += 2*M_PI;
+        }else{
+            // Already normalized, we are cool
+        }
 
-    return ret_angle;
+    return norm_delta_phi;
 
 }

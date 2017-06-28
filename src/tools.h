@@ -22,8 +22,9 @@ public:
   enum state_E{
       X = 0,
       Y,
-      Vx,
-      Vy,
+      V,
+      YAW,
+      YAWRATE,
 
       STATE_SIZE
   };

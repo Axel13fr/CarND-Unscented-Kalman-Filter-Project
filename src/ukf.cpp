@@ -131,15 +131,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
      * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
    */
     if(IsMeasurementUsed(meas_package)){
-        // In case delta T is too large, decompose prediction to avoid 
-        // numerical instabilities
         auto delta_t = GetDeltaT(meas_package);
-        constexpr double dt = 0.05;
-        while (delta_t > 0.1)
-        {
-            Prediction(dt);
-            delta_t -= dt;
-        }
         Prediction(delta_t);
     }else{
         // measurement type ignored
@@ -234,7 +226,12 @@ MatrixXd UKF::AugmentedSigmaPoints() {
     for (int i = 0; i< n_aug; i++)
     {
         Xsig_aug.col(i+1)       = x_aug + sqrt(lambda_+n_aug) * L.col(i);
+        // Normalize the angle even for sigma points !
+        Xsig_aug.col(i+1)(3)= Tools::NormalizeAngle(Xsig_aug.col(i+1)(3));
+        Xsig_aug.col(i+1)(4)= Tools::NormalizeAngle(Xsig_aug.col(i+1)(4));
         Xsig_aug.col(i+1+n_aug) = x_aug - sqrt(lambda_+n_aug) * L.col(i);
+        Xsig_aug.col(i+1+n_aug)(3)= Tools::NormalizeAngle(Xsig_aug.col(i+1+n_aug)(3));
+        Xsig_aug.col(i+1+n_aug)(4)= Tools::NormalizeAngle(Xsig_aug.col(i+1+n_aug)(4));
     }
 
     //print result
@@ -405,15 +402,9 @@ void UKF::PredictRadarMeasurement(MatrixXd& ZSig_out,VectorXd& z_out, MatrixXd& 
         double v2 = sin(yaw)*v;
 
         // measurement model
-        if (p_x == 0 && p_y == 0) {
-          Zsig(0,i) = 0;
-          Zsig(1,i) = 0;
-          Zsig(2,i) = 0;
-        } else {
-          Zsig(Tools::RO,i) = sqrt(p_x*p_x + p_y*p_y);                           //r
-          Zsig(Tools::THETA,i) = atan2(p_y,p_x);                                 //phi
-          Zsig(Tools::RO_DOT,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);  //r_dot
-        }
+        Zsig(Tools::RO,i) = sqrt(p_x*p_x + p_y*p_y);                           //r
+        Zsig(Tools::THETA,i) = atan2(p_y,p_x);                                 //phi
+        Zsig(Tools::RO_DOT,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);  //r_dot
 
     }
 

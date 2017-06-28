@@ -142,6 +142,10 @@ private:
      * @return true if the measurement type shall be processed
      */
     bool IsMeasurementUsed(MeasurementPackage meas_package);
+
+    // Predict sigma points from state space to measurement space for update
+    void PredictLidarMeasurement(MatrixXd& ZSig_out,VectorXd& z_out, MatrixXd& S_out);
+    void UpdateStateLidar(const MatrixXd &Zsig, const VectorXd &z_pred, const MatrixXd &S_pred, const VectorXd &z_meas);
 };
 
 #endif /* UKF_H */

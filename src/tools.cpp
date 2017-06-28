@@ -66,14 +66,13 @@ Eigen::VectorXd Tools::TransformToRadarFromState(const Eigen::VectorXd &state)
 
 double Tools::NormalizeAngle(const double& angle){
 
-    auto norm_delta_phi = fmod(angle,2*M_PI);
-        if(norm_delta_phi > M_PI){
-            norm_delta_phi -= 2*M_PI;
-        }else if(norm_delta_phi < -M_PI){
-            norm_delta_phi += 2*M_PI;
-        }else{
-            // Already normalized, we are cool
-        }
+    auto norm_delta_phi = angle;
+    while (norm_delta_phi > M_PI) {
+        norm_delta_phi -= 2. * M_PI;
+    }
+    while (norm_delta_phi < -M_PI) {
+        norm_delta_phi += 2. * M_PI;
+    }
 
     return norm_delta_phi;
 

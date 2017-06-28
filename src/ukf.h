@@ -127,10 +127,10 @@ private:
     MatrixXd AugmentedSigmaPoints();
 
      // Predict sigma points for prediction step (from augmented sig pts to predicted sig pts)
-    MatrixXd SigmaPointPrediction(const MatrixXd &Xsig_aug, const double delta_t);
+    void SigmaPointPrediction(const MatrixXd &Xsig_aug, const double delta_t);
 
     // Predict state & cov matrix for prediction step
-    void PredictMeanAndCovariance(VectorXd &x_out, MatrixXd &P_out);
+    void PredictMeanAndCovariance();
 
     // Predict sigma points from state space to measurement space for update
     void PredictRadarMeasurement(MatrixXd &ZSig_out, VectorXd &z_out, MatrixXd &S_out);
@@ -146,6 +146,11 @@ private:
     // Predict sigma points from state space to measurement space for update
     void PredictLidarMeasurement(MatrixXd& ZSig_out,VectorXd& z_out, MatrixXd& S_out);
     void UpdateStateLidar(const MatrixXd &Zsig, const VectorXd &z_pred, const MatrixXd &S_pred, const VectorXd &z_meas);
+
+
+    void predictMeanAndCovariance();
+    void predictSigmaPoints(double dt, MatrixXd Xsig_aug);
+    MatrixXd augmentSigmaPoints();
 };
 
 #endif /* UKF_H */

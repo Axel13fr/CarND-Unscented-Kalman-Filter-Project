@@ -410,18 +410,11 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
 
       You'll also need to calculate the lidar NIS.
       */
-    // Predict measurement
-    MatrixXd Zsig;
-    VectorXd z_pred;
-    MatrixXd S_pred;
-    //PredictLidarMeasurement(Zsig,z_pred,S_pred);
 
     // Update
     VectorXd Z_meas = VectorXd(2); // X and Y measurements
     Z_meas <<  meas_package.raw_measurements_(Tools::X),
             meas_package.raw_measurements_(Tools::Y);
-
-    //UpdateStateLidar(Zsig,z_pred,S_pred,Z_meas);
 
     /*
      * KF Measurement update step : laser case

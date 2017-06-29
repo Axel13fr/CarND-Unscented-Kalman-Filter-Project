@@ -261,11 +261,6 @@ void UKF::Prediction(double delta_t) {
 
     // Predict mu and P
     PredictMeanAndCovariance();
-
-    //MatrixXd Xsig_aug = augmentSigmaPoints();
-    //predictSigmaPoints(delta_t, Xsig_aug);
-    //predictMeanAndCovariance();
-
 }
 
 void UKF::PredictMeanAndCovariance() {
@@ -283,12 +278,7 @@ void UKF::PredictMeanAndCovariance() {
         // state difference
         VectorXd x_diff = Xsig_pred_.col(i) - x_;
         //angle normalization
-        while (x_diff(3) > M_PI)
-          x_diff(3) -= 2. * M_PI;
-        while (x_diff(3) < -M_PI)
-          x_diff(3) += 2. * M_PI;
-
-        //x_(3)= Tools::NormalizeAngle(x_(3));
+        x_diff(3)= Tools::NormalizeAngle(x_diff(3));
 
         P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
     }
@@ -424,14 +414,33 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
     MatrixXd Zsig;
     VectorXd z_pred;
     MatrixXd S_pred;
-    PredictLidarMeasurement(Zsig,z_pred,S_pred);
+    //PredictLidarMeasurement(Zsig,z_pred,S_pred);
 
     // Update
     VectorXd Z_meas = VectorXd(2); // X and Y measurements
     Z_meas <<  meas_package.raw_measurements_(Tools::X),
             meas_package.raw_measurements_(Tools::Y);
 
-    UpdateStateLidar(Zsig,z_pred,S_pred,Z_meas);
+    //UpdateStateLidar(Zsig,z_pred,S_pred,Z_meas);
+
+    /*
+     * KF Measurement update step : laser case
+     * all linear so use regular KF equations
+     */
+    MatrixXd R = MatrixXd::Zero(2,2);
+    R <<    std_laspx_*std_laspx_,0,
+            0, std_laspy_*std_laspy_;
+    MatrixXd H_ = MatrixXd::Zero(2,n_x_);
+    H_ << 1,0,0,0,0,
+          0,1,0,0,0;
+    VectorXd y = Z_meas - H_ * x_;
+    MatrixXd S = H_ * P_ * H_.transpose() + R;
+    MatrixXd K =  P_ * H_.transpose() * S.inverse();
+
+    //new state
+    x_ = x_ + (K * y);
+    auto I = MatrixXd::Identity(n_x_, n_x_);
+    P_ = (I - K * H_) * P_;
 
 }
 

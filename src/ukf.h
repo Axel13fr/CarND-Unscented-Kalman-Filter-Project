@@ -147,10 +147,6 @@ private:
     void PredictLidarMeasurement(MatrixXd& ZSig_out,VectorXd& z_out, MatrixXd& S_out);
     void UpdateStateLidar(const MatrixXd &Zsig, const VectorXd &z_pred, const MatrixXd &S_pred, const VectorXd &z_meas);
 
-
-    void predictMeanAndCovariance();
-    void predictSigmaPoints(double dt, MatrixXd Xsig_aug);
-    MatrixXd augmentSigmaPoints();
 };
 
 #endif /* UKF_H */

@@ -68,7 +68,7 @@ public:
     static constexpr int n_aug_ = 7;
 
     ///* Sigma point spreading parameter
-    static constexpr int lambda_ = 3 - n_x_;
+    static constexpr double lambda_ = 3 - n_x_;
 
 
     /**

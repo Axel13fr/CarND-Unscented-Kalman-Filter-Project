@@ -34,7 +34,7 @@ UKF::UKF() :
 
     // CRTV model
     // Process noise standard deviation longitudinal acceleration in m/s^2
-    std_a_ = 3; // ~0 to 100kph in 10s
+    std_a_ = 1.5; // ~0 to 100kph in 10s
 
     // Process noise standard deviation yaw acceleration in rad/s^2
     std_yawdd_ = 0.4; // pi/8
@@ -96,8 +96,8 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
         P_ << 1,0,0,0,0,
                 0,1,0,0,0,
                 0,0,1,0,0,
-                0,0,0,0.5,0, // orientation grad^2
-                0,0,0,0,0.5;   // yaw rate
+                0,0,0,1,0, // orientation grad^2
+                0,0,0,0,1;   // yaw rate
         cout << P_ << endl;
 
         if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
@@ -112,7 +112,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       */
             x_ <<  meas_package.raw_measurements_(0),
                     meas_package.raw_measurements_(1),
-                    0.2,0.1,0.0;
+                    0.0,0.0,0.0;
         }
 
         previous_timestamp_ = meas_package.timestamp_us_;
